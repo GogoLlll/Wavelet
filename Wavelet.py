@@ -34,6 +34,8 @@ class Signal:
             result.append(value)
             result.extend([0] * (factor - 1))
 
+        new_length = len(result)
+        new_end_index = self.start_index + new_length - 1
         return Signal(result, self.start_index)
 
     # Downsampling
@@ -42,6 +44,8 @@ class Signal:
             raise ValueError("Коэффициент уменьшения должен быть больше 0.")
 
         result = self.values[::factor]
+        new_length = len(result)
+        new_end_index = self.start_index + new_length - 1
         return Signal(result, self.start_index)
 
     # Прямое преобразование Хаара
@@ -51,15 +55,16 @@ class Signal:
             raise ValueError("Длина сигнала должна быть степенью двойки для применения Хаара.")
 
         output = np.copy(self.values).astype(float)
-        length = n  # Длина текущего активного диапазона
+        h = 1
 
-        while length > 1:
-            for i in range(0, length, 2):
-                avg = (output[i] + output[i + 1]) / 2.0
-                diff = (output[i] - output[i + 1]) / 2.0
-                output[i // 2] = avg
-                output[length // 2 + i // 2] = diff
-            length //= 2  # Уменьшаем длину активного диапазона
+        # Прямое преобразование Хаара
+        while h < len(output):
+            for i in range(0, len(output), h * 2):
+                avg = (output[i] + output[i + h]) / 2.0
+                diff = (output[i] - output[i + h]) / 2.0
+                output[i] = avg
+                output[i + h] = diff
+            h *= 2
 
         return Signal(list(output), self.start_index)
 
@@ -67,16 +72,16 @@ class Signal:
     def inverse_haar_transform(self):
         n = len(self.values)
         output = np.copy(self.values).astype(float)
-        h = 1
+        h = n // 2
 
         # Обратное преобразование Хаара
-        while h < n:
-            for i in range(0, n, h * 2):
+        while h > 0:
+            for i in range(0, len(output), h * 2):
                 avg = output[i]
                 diff = output[i + h]
                 output[i] = avg + diff
                 output[i + h] = avg - diff
-            h *= 2
+            h //= 2
 
         return Signal(list(output), self.start_index)
 
@@ -103,7 +108,6 @@ def convolve(signal1, signal2):
     return Signal(result_values, result_start_index), result_start_index, result_end_index
 
 
-# Пример использования
 signal1 = Signal([1, 2, 3], start_index=5)
 signal2 = Signal([0, 1, 0.5], start_index=1)
 
@@ -121,19 +125,21 @@ print(f"Upsampled сигнал: {upsampled_signal}")
 downsampled_signal = signal1.downsample(2)
 print(f"Downsampled сигнал: {downsampled_signal}")
 
-# Свертка сигналов
 convolved_signal, start_index, end_index = convolve(signal1, signal2)
 print(f"Свертка сигналов: {convolved_signal}")
 print(f"Стартовый индекс: {start_index}, Конечный индекс: {end_index}")
 
-# Пример преобразования Хаара
+# Пример использования
 signal = Signal([1, 2, 3, 4, 5, 6, 7, 8], start_index=3)
 print(f"Исходный сигнал: {signal.values}, {signal.start_index}")
 
 # Прямое преобразование Хаара
 haar_transformed_signal = signal.haar_transform()
-print(f"Сигнал после преобразования Хаара: {haar_transformed_signal.values}, {haar_transformed_signal.start_index}")
+print(f"Сигнал после преобразования Хаара: {haar_transformed_signal.values}, {signal.start_index}")
 
 # Обратное преобразование Хаара
 inverse_haar_signal = haar_transformed_signal.inverse_haar_transform()
-print(f"Восстановленный сигнал после обратного преобразования Хаара: {inverse_haar_signal.values}, {inverse_haar_signal.start_index}")
+print(f"Восстановленный сигнал после обратного преобразования Хаара: {inverse_haar_signal.values}, {signal.start_index}")
+
+
+#eeee5e5e
