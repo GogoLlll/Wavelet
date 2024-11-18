@@ -1,4 +1,5 @@
 import numpy as np
+import sympy as sp
 
 class Signal:
 
@@ -108,6 +109,23 @@ def convolve(signal1, signal2):
     return Signal(result_values, result_start_index), result_start_index, result_end_index
 
 
+# Функция факторизации многочлена шестой степени
+def factorize_polynomial(coefficients):
+    if len(coefficients) != 7:
+        raise ValueError("Многочлен должен быть 6 степени (7 коэффициентов).")
+
+    x = sp.Symbol('x')  # Объявляем переменную x
+    polynomial = sum(coef * x ** i for i, coef in enumerate(reversed(coefficients)))
+    factorized = sp.factor(polynomial)  # Факторизуем многочлен
+    return polynomial, factorized
+
+
+# Примеры использования
+coefficients = [1, -3, 3, -1, 0, 0, 0]
+polynomial, factorized = factorize_polynomial(coefficients)
+print(f"Исходный многочлен: {polynomial}")
+print(f"Факторизованный многочлен: {factorized}")
+
 signal1 = Signal([1, 2, 3], start_index=5)
 signal2 = Signal([0, 1, 0.5], start_index=1)
 
@@ -129,14 +147,11 @@ convolved_signal, start_index, end_index = convolve(signal1, signal2)
 print(f"Свертка сигналов: {convolved_signal}")
 print(f"Стартовый индекс: {start_index}, Конечный индекс: {end_index}")
 
-# Пример использования
 signal = Signal([1, 2, 3, 4, 5, 6, 7, 8], start_index=3)
 print(f"Исходный сигнал: {signal.values}, {signal.start_index}")
 
-# Прямое преобразование Хаара
 haar_transformed_signal = signal.haar_transform()
 print(f"Сигнал после преобразования Хаара: {haar_transformed_signal.values}, {signal.start_index}")
 
-# Обратное преобразование Хаара
 inverse_haar_signal = haar_transformed_signal.inverse_haar_transform()
 print(f"Восстановленный сигнал после обратного преобразования Хаара: {inverse_haar_signal.values}, {signal.start_index}")
