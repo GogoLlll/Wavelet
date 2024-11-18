@@ -140,6 +140,3 @@ print(f"Сигнал после преобразования Хаара: {haar_t
 # Обратное преобразование Хаара
 inverse_haar_signal = haar_transformed_signal.inverse_haar_transform()
 print(f"Восстановленный сигнал после обратного преобразования Хаара: {inverse_haar_signal.values}, {signal.start_index}")
-
-
-#eeee5e5e
