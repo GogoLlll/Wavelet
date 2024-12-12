@@ -342,83 +342,12 @@ def transform_audio_with_levels_and_save(audio_path, output_folder, level=3):
 
     print(f"Результат сохранен в {synthesis_output_path}")
 
-# Создание сигналов
-signal_1 = Signal([1, 2, 3], start_index=0)
-signal_2 = Signal([4, 5], start_index=-1)
-
-print("Сигнал 1:", signal_1.get_info())
-print("Сигнал 2:", signal_2.get_info())
-
-# Сложение сигналов
-sum_signal = signal_1.add(signal_2)
-print("Сумма сигналов:", sum_signal.get_info())
-
-# Умножение на число
-mul_signal = signal_1.mul(2)
-print("Сигнал 1, умноженный на скаляр:", mul_signal.get_info())
-
-# Свертка сигналов
-kernel = Signal([0.5, 1], start_index=0)
-convolved_signal = signal_1.convolve(kernel)
-print("Свертка сигнала 1 и ядра:", convolved_signal.get_info())
-
 # Добавляем фильтры для анализа и синтеза
 sq = math.sqrt(2)
 h0 = Signal([1/sq, 1/sq], start_index=0)  # фильтр для анализа
 h1 = Signal([1/sq, -1/sq], start_index=0)  # другой фильтр для анализа
 f0 = Signal([1/sq, 1/sq], start_index=-1)  # фильтр для синтеза
 f1 = Signal([-1/sq, 1/sq], start_index=-1)  # другой фильтр для синтеза
-
-# Проведение анализа
-y0, y1 = signal_1.Analysis(h0, h1)
-print("Анализ:")
-print("y0:", y0.get_info())
-print("y1:", y1.get_info())
-
-# Проведение синтеза
-synthesized_signal = signal_1.Synthesis(y0, y1, f0, f1)
-print("Синтезированный сигнал:", synthesized_signal.get_info())
-
-signal = Signal([1, 2, 3, 4, 5, 6, 7, 8], start_index=0)
-
-# Пример факторизации
-factorized = signal.factorize_polynomial()
-print("Факторизация:", factorized)
-
-x = sympy.symbols('x')
-poly = x**7 - 3*x**6 + 3*x**5 - x**4
-
-# Факторизация
-factorized = sympy.Poly(poly).factor_list()
-print("Факторизация2:", factorized)
-
-# Генерация фильтров
-H0, F0, H1, F1 = signal.generate_filters((1, [(sympy.symbols('x') + 1, 3), (sympy.symbols('x') - 1, 2)]))
-print("H0:", H0.values, "F0:", F0.values, "H1:", H1.values, "F1:", F1.values)
-
-# Фильтрация 6-й степени
-filters = signal.filter_bank_6th_degree((1, [(sympy.symbols('x') + 1, 6), (sympy.symbols('x') - 1, 6)]))
-# print("Filters:", [[f.values for f in step] for step in filters])
-for i, (H0, F0, H1, F1) in enumerate(filters):
-        print(f"Шаг {i + 1}:")
-        print(f"H0: {H0.values}")
-        print(f"F0: {F0.values}")
-        print(f"H1: {H1.values}")
-        print(f"F1: {F1.values}")
-
-# Прямое преобразование
-transformed_signal = Signal.direct_transform(signal)
-print("Прямое преобразование:", transformed_signal.get_info())
-
-# Обратное преобразование
-restored_signal = Signal.inverse_transform(transformed_signal)
-print("Обратное преобразование:", restored_signal.get_info())
-
-# Определение символа
-x = sympy.symbols('x')
-
-# Создание полинома
-base_poly = sympy.Poly([1, -1], x)  # Пример базового полинома с генератором x
 
 # Вызов функции с вашим аудиофайлом и путями для сохранения
 audio_path = "Exp.mp3"
